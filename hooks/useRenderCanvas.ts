@@ -134,18 +134,20 @@ const useRenderCanvas = ({
 
     ctx.fillStyle = "#212121";
     ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
     const stationNameFontSize = 64;
     const stationNameTextWidth = ctx.measureText(trainTypeText).width;
     ctx.font = `bold ${stationNameFontSize}px sans-serif`;
     ctx.fillText(
       stationName,
-      (canvas.width - stationNameTextWidth) / 2,
+      (canvas.width - stationNameTextWidth) / 1.5,
       150,
-      canvas.width - (canvas.width - stationNameTextWidth) / 2 - 100
+      canvas.width - (canvas.width - stationNameTextWidth) / 3
     );
 
     ctx.fillStyle = "#555";
     ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
     const boundStationNameFontSize = 32;
     ctx.font = `bold ${boundStationNameFontSize}px sans-serif`;
     ctx.fillText(`${boundStationName}ゆき`, 200, 37.5, canvas.width);

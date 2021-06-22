@@ -52,7 +52,8 @@ export default function Home(): React.ReactElement {
       />
       <p>右クリックで保存できます</p>
 
-      {url && <img className={styles.img} id="result" src={url} />}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      {url && <img className={styles.img} id="result" src={url} alt="result" />}
     </div>
   );
 }
