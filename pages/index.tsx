@@ -8,7 +8,7 @@ export default function Home() {
   const [trainType, setTrainType] = useState("local");
   const [boundStationName, setBoundStationName] = useState<string>();
   const [stationName, setStationName] = useState<string>();
-  const [lineColor, setLineColor] = useState('#008ffe');
+  const [lineColor, setLineColor] = useState("#008ffe");
 
   const fetchImage = useCallback(
     async (e: FormEvent<HTMLFormElement>) => {

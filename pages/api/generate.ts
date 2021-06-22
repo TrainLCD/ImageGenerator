@@ -8,9 +8,13 @@ export type PermittedPayload = {
   lineColor: string;
 };
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+): void {
   if (req.method !== "POST") {
-    return res.status(404);
+    res.status(404);
+    return;
   }
 
   const {
