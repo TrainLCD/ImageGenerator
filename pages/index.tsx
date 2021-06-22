@@ -5,17 +5,30 @@ import { PermittedPayload } from "./api/generate";
 
 export default function Home() {
   const [result, setResult] = useState<string>();
+  const [trainType, setTrainType] = useState("local");
+  const [boundStationName, setBoundStationName] = useState<string>();
+  const [stationName, setStationName] = useState<string>();
+  const [lineColor, setLineColor] = useState('#008ffe');
 
-  const fetchImage = useCallback(async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const body = JSON.stringify({} as PermittedPayload);
+  const fetchImage = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    const res = await fetch("/api/generate", {
-      method: "post",
-      body,
-    });
-    setResult(await res.text());
-  }, []);
+      const body = JSON.stringify({
+        trainType,
+        boundStationName,
+        stationName,
+        lineColor,
+      } as PermittedPayload);
+
+      const res = await fetch("/api/generate", {
+        method: "post",
+        body,
+      });
+      setResult(await res.text());
+    },
+    [trainType, boundStationName, stationName, lineColor]
+  );
 
   return (
     <div className={styles.container}>
@@ -26,8 +39,34 @@ export default function Home() {
       </Head>
 
       <form onSubmit={fetchImage}>
+        <select
+          value={trainType}
+          onChange={(e) => setTrainType(e.currentTarget.value)}
+        >
+          <option value="local">普通</option>
+          <option value="rapid">快速</option>
+          <option value="express">急行</option>
+        </select>
+        <input
+          type="text"
+          placeholder="行き先"
+          value={boundStationName}
+          onChange={(e) => setBoundStationName(e.currentTarget.value)}
+        />
+        <input
+          type="text"
+          placeholder="現在の駅"
+          value={stationName}
+          onChange={(e) => setStationName(e.currentTarget.value)}
+        />
+        <input
+          type="color"
+          value={lineColor}
+          onChange={(e) => setLineColor(e.currentTarget.value)}
+        />
         <input type="submit" />
       </form>
+      <p>右クリックで保存できます</p>
 
       {result && <img className={styles.img} id="result" src={result} />}
     </div>

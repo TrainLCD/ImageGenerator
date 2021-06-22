@@ -1,14 +1,48 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createCanvas } from "canvas";
 
-export type PermittedPayload = {};
+export type PermittedPayload = {
+  trainType: "local" | "rapid" | "express";
+  boundStationName: string;
+  stationName: string;
+  lineColor: string;
+};
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
-    res.status(404);
+    return res.status(404);
   }
+
+  const {
+    trainType = "local",
+    boundStationName = "稚内",
+    stationName = "新宿",
+    lineColor = "#008ffe",
+  } = JSON.parse(req.body) as PermittedPayload;
+
+  const hex2rgb = (hex: string) => {
+    if (hex.slice(0, 1) == "#") hex = hex.slice(1);
+    if (hex.length == 3)
+      hex =
+        hex.slice(0, 1) +
+        hex.slice(0, 1) +
+        hex.slice(1, 2) +
+        hex.slice(1, 2) +
+        hex.slice(2, 3) +
+        hex.slice(2, 3);
+
+    return [hex.slice(0, 2), hex.slice(2, 4), hex.slice(4, 6)].map(function (
+      str
+    ) {
+      return parseInt(str, 16);
+    });
+  };
+
   const canvas = createCanvas(1280, 720);
   const ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "white";
+  ctx.fill();
 
   const headerBgGradient = ctx.createLinearGradient(0, 0, 0, 200);
   headerBgGradient.addColorStop(0, "rgb(238, 238, 238)");
@@ -18,10 +52,41 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
   headerBgGradient.addColorStop(0.6, "rgb(238, 238, 238)");
   ctx.fillStyle = headerBgGradient;
   ctx.fillRect(0, 0, 1280, 200);
+  const headerBgBottomGradient = ctx.createLinearGradient(0, 0, 0, 10);
+  headerBgBottomGradient.addColorStop(
+    0,
+    `rgba(${hex2rgb(lineColor).join(",")} 0.93)`
+  );
+  headerBgBottomGradient.addColorStop(
+    1,
+    `rgba(${hex2rgb(lineColor).join(",")}, 0.67)`
+  );
+
+  ctx.fillStyle = headerBgBottomGradient;
+  ctx.fillRect(0, 200, 1280, 10);
+
+  const trainTypeHex = (() => {
+    switch (trainType) {
+      case "local":
+        return "#1f63c6";
+      case "rapid":
+        return "#dc143c";
+      case "express":
+        return "#dc143c";
+      default:
+        return "#1f63c6";
+    }
+  })();
 
   const trainTypeBoxGradient = ctx.createLinearGradient(0, 0, 0, 55);
-  trainTypeBoxGradient.addColorStop(0, "rgba(220, 20, 60, 0.93)");
-  trainTypeBoxGradient.addColorStop(1, "rgba(220, 20, 60, 0.67)");
+  trainTypeBoxGradient.addColorStop(
+    0,
+    `rgba(${hex2rgb(trainTypeHex).join(",")} 0.93)`
+  );
+  trainTypeBoxGradient.addColorStop(
+    1,
+    `rgba(${hex2rgb(trainTypeHex).join(",")}, 0.67)`
+  );
 
   const trainTypeBoxGradientBase = ctx.createLinearGradient(0, 0, 0, 55);
   trainTypeBoxGradientBase.addColorStop(0.5, "rgb(170, 170, 170)");
@@ -73,19 +138,54 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     trainTypeBoxGradient
   );
 
-  const mockTrainTypeText = "快 速";
+  const trainTypeText = (() => {
+    switch (trainType) {
+      case "local":
+        return "普 通";
+      case "rapid":
+        return "快 速";
+      case "express":
+        return "急 行";
+      default:
+        return "普 通";
+    }
+  })();
+
   ctx.fillStyle = "white";
   ctx.textBaseline = "middle";
   const trainTypeBoxFontSize = 32;
-  const textWidth = ctx.measureText(mockTrainTypeText).width;
-
+  const trainTypeBoxTextWidth = ctx.measureText(trainTypeText).width;
   ctx.font = `bold ${trainTypeBoxFontSize}px sans-serif`;
   ctx.fillText(
-    mockTrainTypeText,
-    (trainTypeBoxW - textWidth) / 2 - trainTypeBoxX,
+    trainTypeText,
+    (trainTypeBoxW - trainTypeBoxTextWidth) / 2 - trainTypeBoxX,
     trainTypeBoxY / 2 + trainTypeBoxFontSize,
     trainTypeBoxW
   );
+
+  ctx.fillStyle = "#212121";
+  ctx.textBaseline = "middle";
+  const stationNameFontSize = 64;
+  const stationNameTextWidth = ctx.measureText(trainTypeText).width;
+  ctx.font = `bold ${stationNameFontSize}px sans-serif`;
+  ctx.fillText(
+    stationName,
+    (canvas.width - stationNameTextWidth) / 2,
+    150,
+    canvas.width
+  );
+
+  ctx.fillStyle = "#555";
+  ctx.textBaseline = "middle";
+  const boundStationNameFontSize = 32;
+  ctx.font = `bold ${boundStationNameFontSize}px sans-serif`;
+  ctx.fillText(`${boundStationName}ゆき`, 200, 37.5, canvas.width);
+
+  ctx.fillStyle = "#212121";
+  ctx.textBaseline = "middle";
+  const stateFontSize = 32;
+  ctx.font = `bold ${stateFontSize}px sans-serif`;
+  ctx.fillText("ただいま", 200, 165, canvas.width);
 
   res.setHeader("Content-Type", "image/png");
 
