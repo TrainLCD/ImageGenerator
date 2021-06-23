@@ -32,7 +32,8 @@ export default function Home(): React.ReactElement {
         value={trainType}
         onChange={(e) => setTrainType(e.currentTarget.value as TrainType)}
       >
-        <option value="local">普通</option>
+        <option value="local">各駅停車</option>
+        <option value="local2">普通</option>
         <option value="rapid">快速</option>
         <option value="express">急行</option>
       </select>

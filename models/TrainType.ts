@@ -1,1 +1,1 @@
-export type TrainType = "local" | "rapid" | "express";
+export type TrainType = "local" | "local2" | "rapid" | "express";

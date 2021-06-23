@@ -110,39 +110,51 @@ const useRenderCanvas = ({
     const trainTypeText = (() => {
       switch (trainType) {
         case "local":
+          return "各駅停車";
+        case "local2":
           return "普 通";
         case "rapid":
           return "快 速";
         case "express":
           return "急 行";
         default:
-          return "普 通";
+          return "各駅停車";
       }
     })();
 
     ctx.fillStyle = "white";
     ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
     const trainTypeBoxFontSize = 32;
-    const trainTypeBoxTextWidth = ctx.measureText(trainTypeText).width;
     ctx.font = `bold ${trainTypeBoxFontSize}px sans-serif`;
     ctx.fillText(
       trainTypeText,
-      (trainTypeBoxW - trainTypeBoxTextWidth) / 2 - trainTypeBoxX,
+      trainTypeBoxX + trainTypeBoxW / 2,
       trainTypeBoxY / 2 + trainTypeBoxFontSize,
       trainTypeBoxW
     );
+
+    const state = "ただいま";
+    const stateX = 200;
+    const stateY = 165;
+    ctx.fillStyle = "#212121";
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "left";
+    const stateFontSize = 32;
+    const stateTextWidth = ctx.measureText(state).width;
+    ctx.font = `bold ${stateFontSize}px sans-serif`;
+    ctx.fillText(state, stateX, stateY, canvas.width);
 
     ctx.fillStyle = "#212121";
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     const stationNameFontSize = 64;
-    const stationNameTextWidth = ctx.measureText(trainTypeText).width;
     ctx.font = `bold ${stationNameFontSize}px sans-serif`;
     ctx.fillText(
       stationName,
-      (canvas.width - stationNameTextWidth) / 1.5,
+      canvas.width / 1.6,
       150,
-      canvas.width - (canvas.width - stationNameTextWidth) / 3
+      canvas.width - (stateTextWidth + stateX + 30)
     );
 
     ctx.fillStyle = "#555";
@@ -151,12 +163,6 @@ const useRenderCanvas = ({
     const boundStationNameFontSize = 32;
     ctx.font = `bold ${boundStationNameFontSize}px sans-serif`;
     ctx.fillText(`${boundStationName}ゆき`, 200, 37.5, canvas.width);
-
-    ctx.fillStyle = "#212121";
-    ctx.textBaseline = "middle";
-    const stateFontSize = 32;
-    ctx.font = `bold ${stateFontSize}px sans-serif`;
-    ctx.fillText("ただいま", 200, 165, canvas.width);
 
     setUrl(canvas.toDataURL());
   }, [boundStationName, lineColor, stationName, trainType]);
