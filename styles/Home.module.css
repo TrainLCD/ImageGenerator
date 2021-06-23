@@ -14,7 +14,12 @@
   text-align: center;
 }
 
+.noticeContainer {
+  margin: 16px 0;
+}
+
 .notice {
+  margin: 0;
   text-align: center;
 }
 

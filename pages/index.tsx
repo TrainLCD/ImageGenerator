@@ -115,20 +115,22 @@ export default function Home(): React.ReactElement {
       {addedStationCount < MAX_ADDITIONAL_STATION_COUNT - 1 && (
         <button onClick={handleIncrementStationCount}>+</button>
       )}
-      <span className={styles.notice}>
-        今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
-      </span>
-      <p className={styles.notice}>
-        右クリックで保存できます。
-        <a
-          className={styles.bold}
-          href="https://twitter.com/search?q=%23trainlcd"
-          rel="noreferrer noopener"
-        >
-          #TrainLCD
-        </a>
-        のハッシュタグをつけてツイートしていただけると嬉しいです。
-      </p>
+      <div className={styles.noticeContainer}>
+        <p className={styles.notice}>
+          今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
+        </p>
+        <p className={styles.notice}>
+          右クリックで保存できます。
+          <a
+            className={styles.bold}
+            href="https://twitter.com/search?q=%23trainlcd"
+            rel="noreferrer noopener"
+          >
+            #TrainLCD
+          </a>
+          のハッシュタグをつけてツイートしていただけると嬉しいです。
+        </p>
+      </div>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {url && <img className={styles.img} id="result" src={url} alt="result" />}
       <footer className={styles.footer}>
