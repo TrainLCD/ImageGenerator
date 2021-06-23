@@ -108,10 +108,10 @@ export default function Home(): React.ReactElement {
         <button onClick={handleIncrementStationCount}>+</button>
       )}
 
-      <span>
+      <span className={styles.notice}>
         今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
       </span>
-      <span>右クリックで保存できます</span>
+      <span className={styles.notice}>右クリックで保存できます</span>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {url && <img className={styles.img} id="result" src={url} alt="result" />}
