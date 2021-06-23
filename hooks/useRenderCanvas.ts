@@ -23,7 +23,7 @@ const useRenderCanvas = ({
     const ctx = canvas.getContext("2d");
 
     ctx.fillStyle = "white";
-    ctx.fill();
+    ctx.fillRect(0, 0, 1280, 720);
 
     const headerBgGradient = ctx.createLinearGradient(0, 0, 0, 200);
     headerBgGradient.addColorStop(0, "#eee");
