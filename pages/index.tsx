@@ -63,7 +63,16 @@ export default function Home(): React.ReactElement {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
+      <p>
+        <a
+          className={styles.bold}
+          href="https://github.com/TrainLCD/MobileApp"
+          rel="noreferrer noopener"
+        >
+          TrainLCDアプリ
+        </a>
+        っぽい画像を作れるジェネレーター系Webアプリ
+      </p>
       <select
         value={trainType}
         onChange={(e) => setTrainType(e.currentTarget.value as TrainType)}
@@ -90,7 +99,6 @@ export default function Home(): React.ReactElement {
         value={lineColor}
         onChange={(e) => setLineColor(e.currentTarget.value)}
       />
-
       {stationInputArray.map((i) => (
         <input
           type="text"
@@ -107,15 +115,12 @@ export default function Home(): React.ReactElement {
       {addedStationCount < MAX_ADDITIONAL_STATION_COUNT - 1 && (
         <button onClick={handleIncrementStationCount}>+</button>
       )}
-
       <span className={styles.notice}>
         今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
       </span>
       <span className={styles.notice}>右クリックで保存できます</span>
-
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {url && <img className={styles.img} id="result" src={url} alt="result" />}
-
       <footer className={styles.footer}>
         <a
           className={styles.bold}
