@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ViaStation } from "../models/Station";
 import { TrainType } from "../models/TrainType";
 
 type Params = {
@@ -6,13 +7,15 @@ type Params = {
   boundStationName: string;
   stationName: string;
   lineColor: string;
+  viaStations: ViaStation[];
 };
 
 const useRenderCanvas = ({
-  trainType = "local",
-  boundStationName = "稚内",
-  stationName = "新宿",
-  lineColor = "#008ffe",
+  trainType,
+  boundStationName,
+  stationName,
+  lineColor,
+  viaStations,
 }: Params): { url: string } => {
   const [url, setUrl] = useState("");
 
@@ -164,8 +167,87 @@ const useRenderCanvas = ({
     ctx.font = `bold ${boundStationNameFontSize}px sans-serif`;
     ctx.fillText(`${boundStationName}ゆき`, 200, 37.5, canvas.width);
 
+    const barY = canvas.height / 1.5;
+    const barW = 1200;
+    const barH = 48;
+
+    const barGradient1 = ctx.createLinearGradient(0, barY, 0, barY + barH);
+    barGradient1.addColorStop(0.5, "#fff");
+    barGradient1.addColorStop(0.5, "#000");
+    barGradient1.addColorStop(0.5, "#000");
+    barGradient1.addColorStop(0.9, "#fff");
+    ctx.fillStyle = barGradient1;
+    ctx.fillRect(0, barY, barW, barH);
+    const barGradient2 = ctx.createLinearGradient(0, barY, 0, barY + barH);
+    barGradient2.addColorStop(0, "#aaaaaaff");
+    barGradient2.addColorStop(1, "#aaaaaabb");
+    ctx.fillStyle = barGradient2;
+    ctx.fillRect(0, barY, barW, barH);
+    const barGradient3 = ctx.createLinearGradient(0, barY, 0, barY + barH);
+    barGradient3.addColorStop(0.5, "#fff");
+    barGradient3.addColorStop(0.5, "#000");
+    barGradient3.addColorStop(0.5, "#000");
+    barGradient3.addColorStop(0.9, "#fff");
+    ctx.fillStyle = barGradient3;
+    ctx.fillRect(0, barY, barW, barH);
+    const barGradient4 = ctx.createLinearGradient(0, barY, 0, barY + barH);
+    barGradient4.addColorStop(0, `${lineColor}ff`);
+    barGradient4.addColorStop(1, `${lineColor}bb`);
+    ctx.fillStyle = barGradient4;
+    ctx.fillRect(0, barY, barW, barH);
+
+    const drawTerminalTriangle = (
+      color: string | CanvasGradient | CanvasPattern
+    ) => {
+      const w = 53;
+      ctx.beginPath();
+      ctx.moveTo(barW, barY);
+      ctx.lineTo(barW, barY + barH);
+      ctx.lineTo(barW + w, barY + barH / 2);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    };
+
+    drawTerminalTriangle(barGradient1);
+    drawTerminalTriangle(barGradient2);
+    drawTerminalTriangle(barGradient3);
+    drawTerminalTriangle(barGradient4);
+
+    // special thanks: https://codepen.io/phi_jp/pen/rpdaB
+    const tategaki = (text: string, x: number, y: number) => {
+      const textList = text.split("\n");
+      const lineHeight = ctx.measureText("あ").width;
+      textList.forEach((elm, i) => {
+        Array.prototype.forEach.call(elm, (ch: string, j: number) => {
+          ctx.fillText(ch, x - lineHeight * i, y + lineHeight * j);
+        });
+      });
+    };
+
+    [{ name: stationName }, ...viaStations]
+      .filter((s) => s.name !== "")
+      .forEach((s, i) => {
+        const barGradient1 = ctx.createLinearGradient(0, barY, 0, barY + barH);
+        barGradient1.addColorStop(0, "#fdfbfb");
+        barGradient1.addColorStop(1, "#ebedee");
+        ctx.fillStyle = barGradient1;
+        const boxW = 48;
+        const xBase = 64;
+        const boxMargin = 96;
+        const x = i === 0 ? 0 : (boxW + boxMargin) * i;
+        ctx.fillRect(xBase + x, barY + 5, boxW, 36);
+
+        const textXBase = 4;
+        const textY = canvas.height - s.name.length * 32 - canvas.height / 3;
+
+        ctx.font = `bold 32px sans-serif`;
+        ctx.fillStyle = "#212121";
+        tategaki(s.name, xBase + x + textXBase, textY);
+      });
+
     setUrl(canvas.toDataURL());
-  }, [boundStationName, lineColor, stationName, trainType]);
+  }, [boundStationName, lineColor, stationName, trainType, viaStations]);
 
   return { url };
 };

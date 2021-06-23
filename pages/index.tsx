@@ -1,21 +1,57 @@
 import Head from "next/head";
 import { useState } from "react";
 import useRenderCanvas from "../hooks/useRenderCanvas";
+import { ViaStation } from "../models/Station";
 import { TrainType } from "../models/TrainType";
 import styles from "../styles/Home.module.css";
 
+const MAX_ADDITIONAL_STATION_COUNT = 7;
+
+const mockViaStations: ViaStation[] = [
+  {
+    name: "高崎問屋町",
+  },
+  {
+    name: "井野",
+  },
+  {
+    name: "新前橋",
+  },
+  {
+    name: "前橋",
+  },
+  {
+    name: "前橋大島",
+  },
+  {
+    name: "駒形",
+  },
+  {
+    name: "伊勢崎",
+  },
+];
 export default function Home(): React.ReactElement {
   const [trainType, setTrainType] = useState<TrainType>("local");
-  const [boundStationName, setBoundStationName] = useState<string>();
-  const [stationName, setStationName] = useState<string>();
-  const [lineColor, setLineColor] = useState("#008ffe");
+  const [boundStationName, setBoundStationName] = useState("小山");
+  const [stationName, setStationName] = useState("高崎");
+  const [lineColor, setLineColor] = useState("#ffd400");
+  const [viaStations, setViaStations] = useState<ViaStation[]>(mockViaStations);
+  const [addedStationCount, setAddedStationCount] = useState(0);
 
   const { url } = useRenderCanvas({
     trainType,
     boundStationName: boundStationName?.trim(),
     stationName: stationName?.trim(),
     lineColor,
+    viaStations,
   });
+
+  const stationInputArray = Array.from({ length: addedStationCount + 1 })
+    .fill(null)
+    .map((_, i) => i);
+
+  const handleIncrementStationCount = () =>
+    setAddedStationCount((prev) => prev + 1);
 
   return (
     <div className={styles.container}>
@@ -54,10 +90,51 @@ export default function Home(): React.ReactElement {
         value={lineColor}
         onChange={(e) => setLineColor(e.currentTarget.value)}
       />
-      <p>右クリックで保存できます</p>
+
+      {stationInputArray.map((i) => (
+        <input
+          type="text"
+          key={i}
+          value={viaStations[i]?.name}
+          onChange={(e) => {
+            const slicedViaStations = [...viaStations];
+            slicedViaStations[i] = { name: e.currentTarget.value };
+            setViaStations(slicedViaStations);
+          }}
+          placeholder={`${i + 1}駅目の名前(8文字まで)`}
+        />
+      ))}
+      {addedStationCount < MAX_ADDITIONAL_STATION_COUNT - 1 && (
+        <button onClick={handleIncrementStationCount}>+</button>
+      )}
+
+      <span>
+        今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
+      </span>
+      <span>右クリックで保存できます</span>
 
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {url && <img className={styles.img} id="result" src={url} alt="result" />}
+
+      <footer className={styles.footer}>
+        <a
+          className={styles.bold}
+          href="https://github.com/TrainLCD/ImageGenerator"
+          rel="noreferrer noopener"
+        >
+          Fork me on GitHub
+        </a>
+        <p className={styles.copyright}>
+          Copyright © 2021{" "}
+          <a
+            className={styles.bold}
+            href="https://github.com/TrainLCD/ImageGenerator"
+            rel="noreferrer noopener"
+          >
+            TinyKitten
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

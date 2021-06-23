@@ -9,3 +9,15 @@
   width: 100%;
   height: auto;
 }
+
+.footer {
+  text-align: center;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.copyright {
+  margin: 4px 0;
+}
