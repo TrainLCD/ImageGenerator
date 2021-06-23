@@ -118,7 +118,17 @@ export default function Home(): React.ReactElement {
       <span className={styles.notice}>
         今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
       </span>
-      <span className={styles.notice}>右クリックで保存できます</span>
+      <p className={styles.notice}>
+        右クリックで保存できます。
+        <a
+          className={styles.bold}
+          href="https://twitter.com/search?q=%23trainlcd"
+          rel="noreferrer noopener"
+        >
+          #TrainLCD
+        </a>
+        のハッシュタグをつけてツイートしていただけると嬉しいです。
+      </p>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       {url && <img className={styles.img} id="result" src={url} alt="result" />}
       <footer className={styles.footer}>
