@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { ViaStation } from "../models/Station";
 import { TrainType } from "../models/TrainType";
+import Canvg from "canvg";
 
 type Params = {
   trainType: TrainType;
@@ -233,20 +234,59 @@ const useRenderCanvas = ({
         barGradient1.addColorStop(1, "#ebedee");
         ctx.fillStyle = barGradient1;
         const boxW = 48;
-        const xBase = 64;
+        const boxXBase = 64;
         const boxMargin = 96;
         const x = i === 0 ? 0 : (boxW + boxMargin) * i;
-        ctx.fillRect(xBase + x, barY + 5, boxW, 36);
+        ctx.fillRect(boxXBase + x, barY + 5, boxW, 36);
 
         const textXBase = 4;
         const textY = canvas.height - s.name.length * 32 - canvas.height / 3;
 
         ctx.font = `bold 32px sans-serif`;
         ctx.fillStyle = "#212121";
-        tategaki(s.name, xBase + x + textXBase, textY);
+        tategaki(s.name, boxXBase + x + textXBase, textY);
       });
 
+    const v = Canvg.fromString(
+      ctx,
+      `
+    <svg viewBox="0 0 45.59 49">
+    <defs>
+        <linearGradient
+          id="prefix__a"
+          x1="22.98"
+          y1="12.4"
+          x2="22.98"
+          y2="36.67"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop offset="0" stop-color="#3fa9f5" />
+          <stop offset="0.5" stop-color="#1d67e0" />
+          <stop offset="0.5" stop-color="#333" />
+          <stop offset="0.9" stop-color="#1765d4" />
+        </linearGradient>
+    </defs>
+    <path
+      stroke="#fff"
+      stroke-miterlimit="10"
+      fill="url(#prefix__a)"
+      d="M27.67.5H.98l17.3 24.06L1.06 48.5h26.69l17.23-23.94L27.67.5z"
+    />
+    </svg>`
+    );
+
+    v.render({
+      ignoreClear: true,
+      scaleWidth: 3.12,
+      offsetX: 640,
+      offsetY: 7000,
+    });
+
     setUrl(canvas.toDataURL());
+
+    return () => {
+      v.stop();
+    };
   }, [boundStationName, lineColor, stationName, trainType, viaStations]);
 
   return { url };
