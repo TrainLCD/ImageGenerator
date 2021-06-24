@@ -66,7 +66,7 @@ export default function Home(): React.ReactElement {
       <p>
         <a
           className={styles.bold}
-          href="https://github.com/TrainLCD/MobileApp"
+          href="https://trainlcd.tinykitten.me"
           rel="noreferrer noopener"
         >
           TrainLCDアプリ
