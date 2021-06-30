@@ -32,11 +32,12 @@ const mockViaStations: ViaStation[] = [
   },
 ];
 
+const ShortDescription = styled.p`
+  margin: 0;
+`;
+
 const Container = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  padding: 16px;
 `;
 
 const BoldAnchor = styled.a`
@@ -49,7 +50,6 @@ const NoticeContainer = styled.div`
 
 const Notice = styled.p`
   margin: 0;
-  text-align: center;
 `;
 
 const Footer = styled.footer`
@@ -60,28 +60,41 @@ const CopyrightText = styled.p`
   margin: 4px 0;
 `;
 
+const ControlPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+`;
+
+const ColorContainer = styled.div`
+  display: flex;
+`;
+
+const InvalidColorText = styled.p`
+  color: crimson;
+  margin: 0;
+`;
+
 export default function Home(): React.ReactElement {
   const [trainType, setTrainType] = useState<TrainType>("local");
   const [boundStationName, setBoundStationName] = useState("小山");
   const [stationName, setStationName] = useState("高崎");
   const [lineColor, setLineColor] = useState("#ffd400");
   const [viaStations, setViaStations] = useState<ViaStation[]>(mockViaStations);
-  const [addedStationCount, setAddedStationCount] = useState(0);
+
+  const testColorHex = (color: string) => /^#[0-9A-F]{6}$/i.test(color);
 
   const { url } = useRenderCanvas({
     trainType,
     boundStationName: boundStationName?.trim(),
     stationName: stationName?.trim(),
-    lineColor,
+    lineColor: testColorHex(lineColor) ? lineColor : "#000000",
     viaStations,
   });
 
-  const stationInputArray = Array.from({ length: addedStationCount + 1 })
+  const stationInputArray = Array.from({ length: MAX_ADDITIONAL_STATION_COUNT })
     .fill(null)
     .map((_, i) => i);
-
-  const handleIncrementStationCount = () =>
-    setAddedStationCount((prev) => prev + 1);
 
   return (
     <Container>
@@ -93,72 +106,82 @@ export default function Home(): React.ReactElement {
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <p>
-        <BoldAnchor
-          href="https://trainlcd.tinykitten.me"
-          rel="noreferrer noopener"
-        >
-          TrainLCDアプリ
-        </BoldAnchor>
-        っぽい画像を作れるジェネレーター系Webアプリ
-      </p>
-      <select
-        value={trainType}
-        onChange={(e) => setTrainType(e.currentTarget.value as TrainType)}
-      >
-        <option value="local">各駅停車</option>
-        <option value="local2">普通</option>
-        <option value="rapid">快速</option>
-        <option value="express">急行</option>
-      </select>
-      <input
-        type="text"
-        placeholder="行き先"
-        value={boundStationName}
-        onChange={(e) => setBoundStationName(e.currentTarget.value)}
-      />
-      <input
-        type="text"
-        placeholder="現在の駅"
-        value={stationName}
-        onChange={(e) => setStationName(e.currentTarget.value)}
-      />
-      <input
-        type="color"
-        value={lineColor}
-        onChange={(e) => setLineColor(e.currentTarget.value)}
-      />
-      {stationInputArray.map((i) => (
-        <input
-          type="text"
-          key={i}
-          value={viaStations[i]?.name}
-          onChange={(e) => {
-            const slicedViaStations = [...viaStations];
-            slicedViaStations[i] = { name: e.currentTarget.value };
-            setViaStations(slicedViaStations);
-          }}
-          placeholder={`${i + 1}駅目の名前(8文字まで)`}
-        />
-      ))}
-      {addedStationCount < MAX_ADDITIONAL_STATION_COUNT - 1 && (
-        <button onClick={handleIncrementStationCount}>+</button>
-      )}
-      <NoticeContainer>
-        <Notice>
-          今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
-        </Notice>
-        <Notice>
-          右クリックで保存できます。
+      <ControlPanel>
+        <ShortDescription>
           <BoldAnchor
-            href="https://twitter.com/search?q=%23trainlcd"
+            href="https://trainlcd.tinykitten.me"
             rel="noreferrer noopener"
           >
-            #TrainLCD
+            TrainLCDアプリ
           </BoldAnchor>
-          のハッシュタグをつけてツイートしていただけると嬉しいです。
-        </Notice>
-      </NoticeContainer>
+          っぽい画像を作れるジェネレーター系Webアプリ
+        </ShortDescription>
+        <select
+          value={trainType}
+          onChange={(e) => setTrainType(e.currentTarget.value as TrainType)}
+        >
+          <option value="local">各駅停車</option>
+          <option value="local2">普通</option>
+          <option value="rapid">快速</option>
+          <option value="express">急行</option>
+        </select>
+        <input
+          type="text"
+          placeholder="行き先"
+          value={boundStationName}
+          onChange={(e) => setBoundStationName(e.currentTarget.value)}
+        />
+        <input
+          type="text"
+          placeholder="現在の駅"
+          value={stationName}
+          onChange={(e) => setStationName(e.currentTarget.value)}
+        />
+        <ColorContainer>
+          <input
+            type="color"
+            value={lineColor}
+            onChange={(e) => setLineColor(e.currentTarget.value)}
+          />
+          <input
+            type="text"
+            placeholder="カラーコード(HEX)"
+            value={lineColor}
+            onChange={(e) => setLineColor(e.currentTarget.value)}
+          />
+        </ColorContainer>
+        {testColorHex(lineColor) ? null : (
+          <InvalidColorText>カラーコードが正しくありません</InvalidColorText>
+        )}
+        {stationInputArray.map((i) => (
+          <input
+            type="text"
+            key={i}
+            value={viaStations[i]?.name}
+            onChange={(e) => {
+              const slicedViaStations = [...viaStations];
+              slicedViaStations[i] = { name: e.currentTarget.value };
+              setViaStations(slicedViaStations);
+            }}
+            placeholder={`${i + 1}駅目の名前(8文字まで)`}
+          />
+        ))}
+        <NoticeContainer>
+          <Notice>
+            今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
+          </Notice>
+          <Notice>
+            右クリックで保存できます。
+            <BoldAnchor
+              href="https://twitter.com/search?q=%23trainlcd"
+              rel="noreferrer noopener"
+            >
+              #TrainLCD
+            </BoldAnchor>
+            のハッシュタグをつけてツイートしていただけると嬉しいです。
+          </Notice>
+        </NoticeContainer>
+      </ControlPanel>
       {url && <Image width={1280} height={720} src={url} alt="result" />}
       <Footer>
         <BoldAnchor
