@@ -1,9 +1,10 @@
 import Head from "next/head";
 import { useState } from "react";
+import styled from "styled-components";
 import useRenderCanvas from "../hooks/useRenderCanvas";
 import { ViaStation } from "../models/Station";
 import { TrainType } from "../models/TrainType";
-import styles from "../styles/Home.module.css";
+import Image from "next/image";
 
 const MAX_ADDITIONAL_STATION_COUNT = 7;
 
@@ -30,6 +31,35 @@ const mockViaStations: ViaStation[] = [
     name: "伊勢崎",
   },
 ];
+
+const Container = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const BoldAnchor = styled.a`
+  font-weight: bold;
+`;
+
+const NoticeContainer = styled.div`
+  margin: 16px 0;
+`;
+
+const Notice = styled.p`
+  margin: 0;
+  text-align: center;
+`;
+
+const Footer = styled.footer`
+  text-align: center;
+`;
+
+const CopyrightText = styled.p`
+  margin: 4px 0;
+`;
+
 export default function Home(): React.ReactElement {
   const [trainType, setTrainType] = useState<TrainType>("local");
   const [boundStationName, setBoundStationName] = useState("小山");
@@ -54,7 +84,7 @@ export default function Home(): React.ReactElement {
     setAddedStationCount((prev) => prev + 1);
 
   return (
-    <div className={styles.container}>
+    <Container>
       <Head>
         <title>TrainLCD Image Generator</title>
         <meta
@@ -64,13 +94,12 @@ export default function Home(): React.ReactElement {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <p>
-        <a
-          className={styles.bold}
+        <BoldAnchor
           href="https://trainlcd.tinykitten.me"
           rel="noreferrer noopener"
         >
           TrainLCDアプリ
-        </a>
+        </BoldAnchor>
         っぽい画像を作れるジェネレーター系Webアプリ
       </p>
       <select
@@ -115,43 +144,39 @@ export default function Home(): React.ReactElement {
       {addedStationCount < MAX_ADDITIONAL_STATION_COUNT - 1 && (
         <button onClick={handleIncrementStationCount}>+</button>
       )}
-      <div className={styles.noticeContainer}>
-        <p className={styles.notice}>
+      <NoticeContainer>
+        <Notice>
           今の時点ではおよそ日本語８文字以上の駅名を入力するとはみ出ます。
-        </p>
-        <p className={styles.notice}>
+        </Notice>
+        <Notice>
           右クリックで保存できます。
-          <a
-            className={styles.bold}
+          <BoldAnchor
             href="https://twitter.com/search?q=%23trainlcd"
             rel="noreferrer noopener"
           >
             #TrainLCD
-          </a>
+          </BoldAnchor>
           のハッシュタグをつけてツイートしていただけると嬉しいです。
-        </p>
-      </div>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {url && <img className={styles.img} id="result" src={url} alt="result" />}
-      <footer className={styles.footer}>
-        <a
-          className={styles.bold}
+        </Notice>
+      </NoticeContainer>
+      {url && <Image width={1280} height={720} src={url} alt="result" />}
+      <Footer>
+        <BoldAnchor
           href="https://github.com/TrainLCD/ImageGenerator"
           rel="noreferrer noopener"
         >
           Fork me on GitHub
-        </a>
-        <p className={styles.copyright}>
+        </BoldAnchor>
+        <CopyrightText>
           Copyright © 2021{" "}
-          <a
-            className={styles.bold}
+          <BoldAnchor
             href="https://github.com/TrainLCD/ImageGenerator"
             rel="noreferrer noopener"
           >
             TinyKitten
-          </a>
-        </p>
-      </footer>
-    </div>
+          </BoldAnchor>
+        </CopyrightText>
+      </Footer>
+    </Container>
   );
 }
